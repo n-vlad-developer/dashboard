@@ -1,0 +1,484 @@
+{
+  "info": {
+    "name": "Q1 dashboard v7",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.mindtech.kz/api/dashboard"
+    },
+    {
+      "key": "venue_id",
+      "value": "2"
+    },
+    {
+      "key": "object_id",
+      "value": "1"
+    },
+    {
+      "key": "menu_id",
+      "value": "1"
+    },
+    {
+      "key": "job_id",
+      "value": "1"
+    },
+    {
+      "key": "email",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "access",
+      "value": ""
+    },
+    {
+      "key": "refresh",
+      "value": ""
+    },
+    {
+      "key": "updated_at",
+      "value": ""
+    },
+    {
+      "key": "idempotency_key",
+      "value": "replace-with-unique-key"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Вход",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/auth/login/",
+        "auth": {
+          "type": "noauth"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) { const t=pm.response.json(); pm.collectionVariables.set(\"access\",t.access); pm.collectionVariables.set(\"refresh\",t.refresh); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Обновить access",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/auth/refresh/",
+        "auth": {
+          "type": "noauth"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refresh\": \"{{refresh}}\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) pm.collectionVariables.set(\"access\",pm.response.json().access);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Выход",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/auth/logout/",
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "Профиль и права",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/me/"
+      }
+    },
+    {
+      "name": "Список menus",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/menus/"
+      }
+    },
+    {
+      "name": "Объект menus",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/menus/{{object_id}}/"
+      }
+    },
+    {
+      "name": "Выключить menus",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "If-Match",
+            "value": "{{updated_at}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/venues/{{venue_id}}/menus/{{object_id}}/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"is_active\": false\n}"
+        }
+      }
+    },
+    {
+      "name": "Список categories",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/categories/"
+      }
+    },
+    {
+      "name": "Объект categories",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/categories/{{object_id}}/"
+      }
+    },
+    {
+      "name": "Выключить categories",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "If-Match",
+            "value": "{{updated_at}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/venues/{{venue_id}}/categories/{{object_id}}/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"is_active\": false\n}"
+        }
+      }
+    },
+    {
+      "name": "Список items",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/items/"
+      }
+    },
+    {
+      "name": "Объект items",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/items/{{object_id}}/"
+      }
+    },
+    {
+      "name": "Выключить items",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "If-Match",
+            "value": "{{updated_at}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/venues/{{venue_id}}/items/{{object_id}}/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"is_active\": false\n}"
+        }
+      }
+    },
+    {
+      "name": "Список modifier-groups",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/modifier-groups/"
+      }
+    },
+    {
+      "name": "Объект modifier-groups",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/modifier-groups/{{object_id}}/"
+      }
+    },
+    {
+      "name": "Выключить modifier-groups",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "If-Match",
+            "value": "{{updated_at}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/venues/{{venue_id}}/modifier-groups/{{object_id}}/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"is_active\": false\n}"
+        }
+      }
+    },
+    {
+      "name": "Список modifiers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/modifiers/"
+      }
+    },
+    {
+      "name": "Объект modifiers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/modifiers/{{object_id}}/"
+      }
+    },
+    {
+      "name": "Выключить modifiers",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "If-Match",
+            "value": "{{updated_at}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/venues/{{venue_id}}/modifiers/{{object_id}}/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"is_active\": false\n}"
+        }
+      }
+    },
+    {
+      "name": "Список synonyms",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/synonyms/"
+      }
+    },
+    {
+      "name": "Объект synonyms",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/synonyms/{{object_id}}/"
+      }
+    },
+    {
+      "name": "Выключить synonyms",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "If-Match",
+            "value": "{{updated_at}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/venues/{{venue_id}}/synonyms/{{object_id}}/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"is_active\": false\n}"
+        }
+      }
+    },
+    {
+      "name": "Создать меню",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/venues/{{venue_id}}/menus/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Новое меню\",\n  \"currency\": \"KZT\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Схема полей",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/schema/"
+      }
+    },
+    {
+      "name": "Перевести меню",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Idempotency-Key",
+            "value": "{{idempotency_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/venues/{{venue_id}}/menus/{{menu_id}}/translate/",
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    },
+    {
+      "name": "Графики",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/analytics/?start=2026-11-01&end=2026-11-07&granularity=day"
+      }
+    },
+    {
+      "name": "reports",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/reports/"
+      }
+    },
+    {
+      "name": "jobs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/jobs/"
+      }
+    },
+    {
+      "name": "calls",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/calls/"
+      }
+    },
+    {
+      "name": "shifts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/shifts/"
+      }
+    },
+    {
+      "name": "Задание",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/venues/{{venue_id}}/jobs/{{job_id}}/"
+      }
+    },
+    {
+      "name": "Пересчитать диапазон",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/venues/{{venue_id}}/reports/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"start\": \"2026-11-01\",\n  \"end\": \"2026-11-06\"\n}"
+        }
+      }
+    }
+  ]
+}
