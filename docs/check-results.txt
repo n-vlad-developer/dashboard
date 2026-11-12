@@ -1,0 +1,23 @@
+Validation: 2026-11-12
+Node.js: v24.22.1 / Windows
+Next.js: 16.4.5 / React: 19.3.1
+npm test: 12 passed (47.3s)
+- Contracts/API: 6 passed
+- Chromium: 3 passed
+- WebKit: 3 passed
+- Widths: 320, 390, 768, 1440; seven sections; no document overflow
+npm run typecheck: passed
+npm run build: passed (including TypeScript)
+npm audit: 0 known vulnerabilities
+Firefox: not verified; browser launcher failed with spawn UNKNOWN
+Physical macOS/iPhone/Android: not available
+Live Q1 API login/OTP/object authorization: not verified without a test account
+Final changes after test suite: replaced three legacy lime values on login; removed unused fixtures and unused logo. Production build passed after these changes.
+
+Mobile table width follow-up: explicit full-width block table; Chromium and WebKit editor regression rerun.
+
+Windows menu follow-up: full-width table; 14px menu/navigation; synonyms tab removed; splash 1800ms + fade 320ms, reduced-motion supported. 8 Chromium/WebKit UI tests passed; production build passed.
+
+Splash follow-up: one Dashboard-owned splash; route fallback is static; dashboard mounts behind inert overlay; timeline starts after fonts + two animation frames; no looping indicator; removed framer-motion. Production build/typecheck passed. 8/8 Chromium/WebKit UI tests passed including single splash mount. 5/6 contracts passed; production test origin on port 3002 mismatched configured origin (403 instead of 400); temporary APP_ORIGIN launch blocked by automatic policy review.
+
+Authentication fix: development log confirmed missing SESSION_SECRET during saveSession after successful OTP. Created ignored local random secret (not packaged). Added preflight before login/verify upstream calls. Production build passed. Isolated integration passed OTP success/failure, encrypted HttpOnly/Secure cookie, dashboard, profile, refresh-token rotation, logout, missing-key preflight without consuming code. Real-account OTP completion requires user retry; no real credentials used. Removed stale duplicate localhost production listener.

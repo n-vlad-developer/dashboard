@@ -1,14 +1,16 @@
-
+import { boundedBody } from "@/lib/request-body";
 import { NextRequest, NextResponse } from "next/server";
 import { backend, error, jsonUpstream } from "@/lib/server";
-import { saveSession } from "@/lib/session";
+import { assertSessionConfigured, saveSession } from "@/lib/session";
 
 // JWT сохраняем только после успешного подтверждения.
 export async function POST(request: NextRequest) {
   let body: unknown;
 
   try {
-    body = await request.json();
+    body = JSON.parse(
+      new TextDecoder().decode(await boundedBody(request, 16384)),
+    );
   } catch {
     return error("Неверный формат запроса", 400);
   }
@@ -18,46 +20,66 @@ export async function POST(request: NextRequest) {
   }
 
   const values = body as Record<string, unknown>;
-  const challengeId = typeof values.challenge_id === "string"
-    ? values.challenge_id.trim() : "";
+  const challengeId =
+    typeof values.challenge_id === "string" ? values.challenge_id.trim() : "";
   const code = values.code;
 
-  if (!challengeId ||
-      challengeId.length > 256 ||
-      typeof code !== "string" ||
-      !/^\d{6}$/.test(code)) {
+  if (
+    !challengeId ||
+    challengeId.length > 256 ||
+    typeof code !== "string" ||
+    !/^\d{6}$/.test(code)
+  ) {
     return error("Введите шестизначный код из письма", 400);
+  }
+
+  try {
+    assertSessionConfigured();
+  } catch {
+    return error(
+      "Вход временно недоступен: на сервере не настроено сохранение сессии. Обратитесь к администратору.",
+      503,
+    );
   }
 
   try {
     const upstream = await backend("auth/login/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ challenge_id: challengeId, code })
+      body: JSON.stringify({ challenge_id: challengeId, code }),
     });
 
     if (!upstream.ok) return jsonUpstream(upstream);
 
     const payload: unknown = await upstream.json();
-    const data = payload && typeof payload === "object"
-      ? payload as Record<string, unknown> : {};
+    const data =
+      payload && typeof payload === "object"
+        ? (payload as Record<string, unknown>)
+        : {};
 
-    if (typeof data.access !== "string" || !data.access ||
-        typeof data.refresh !== "string" || !data.refresh) {
+    if (
+      typeof data.access !== "string" ||
+      !data.access ||
+      typeof data.refresh !== "string" ||
+      !data.refresh
+    ) {
       return error("Сервер подтвердил код, но не вернул токены", 502);
     }
 
     await saveSession({
       access: data.access,
-      refresh: data.refresh
+      refresh: data.refresh,
     });
 
     return NextResponse.json(
       { ok: true },
-      { headers: { "Cache-Control": "no-store" } }
+      { headers: { "Cache-Control": "no-store" } },
     );
   } catch (cause) {
-    console.error("[Q1 AUTH /verify]", cause instanceof Error ? cause.message : "network error");
+    console.error(
+      "[Q1 AUTH /verify]",
+      cause instanceof Error ? cause.message : "network error",
+    );
     return error("Не удалось завершить авторизацию", 502);
   }
 }

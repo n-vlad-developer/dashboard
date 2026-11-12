@@ -2,7 +2,30 @@
   "name": "q1-dashboard",
   "version": "0.1.0",
   "private": true,
-  "scripts": {"dev":"next dev", "build":"next build", "start":"next start", "typecheck":"tsc --noEmit"},
-  "dependencies": {"next":"^16.0.0", "react":"^19.0.0", "react-dom":"^19.0.0", "lucide-react":"^0.468.0"},
-  "devDependencies": {"@types/node":"^22.0.0", "@types/react":"^19.0.0", "@types/react-dom":"^19.0.0", "typescript":"^5.8.0"}
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "playwright test --project=contracts --project=chromium --project=webkit",
+    "test:firefox": "playwright test --project=firefox",
+    "test:auth": "npm run build && node tests/auth-integration.mjs",
+    "format": "prettier --write app components lib styles tests *.ts"
+  },
+  "dependencies": {
+    "@fontsource-variable/manrope": "^5.3.0",
+    "fflate": "^0.8.3",
+    "lucide-react": "^0.468.0",
+    "next": "^16.4.5",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "prettier": "^3.9.10",
+    "typescript": "^5.8.0"
+  }
 }
